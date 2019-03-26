@@ -3,4 +3,4 @@ project(Copy C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Copy main.c)
+add_executable(Copy src/main.c)
