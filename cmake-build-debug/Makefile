@@ -122,32 +122,32 @@ Copy/fast:
 	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/build
 .PHONY : Copy/fast
 
-main.obj: main.c.obj
+src/main.obj: src/main.c.obj
 
-.PHONY : main.obj
+.PHONY : src/main.obj
 
 # target to build an object file
-main.c.obj:
-	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/main.c.obj
-.PHONY : main.c.obj
+src/main.c.obj:
+	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/src/main.c.obj
+.PHONY : src/main.c.obj
 
-main.i: main.c.i
+src/main.i: src/main.c.i
 
-.PHONY : main.i
+.PHONY : src/main.i
 
 # target to preprocess a source file
-main.c.i:
-	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/main.c.i
-.PHONY : main.c.i
+src/main.c.i:
+	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/src/main.c.i
+.PHONY : src/main.c.i
 
-main.s: main.c.s
+src/main.s: src/main.c.s
 
-.PHONY : main.s
+.PHONY : src/main.s
 
 # target to generate assembly for a file
-main.c.s:
-	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/main.c.s
-.PHONY : main.c.s
+src/main.c.s:
+	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/src/main.c.s
+.PHONY : src/main.c.s
 
 # Help Target
 help:
@@ -158,9 +158,9 @@ help:
 	@echo ... Copy
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... main.obj
-	@echo ... main.i
-	@echo ... main.s
+	@echo ... src/main.obj
+	@echo ... src/main.i
+	@echo ... src/main.s
 .PHONY : help
 
 

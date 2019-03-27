@@ -56,38 +56,38 @@ include CMakeFiles/Copy.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/Copy.dir/flags.make
 
-CMakeFiles/Copy.dir/main.c.obj: CMakeFiles/Copy.dir/flags.make
-CMakeFiles/Copy.dir/main.c.obj: ../main.c
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Saar\CLionProjects\Communication-Networks\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Copy.dir/main.c.obj"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\Copy.dir\main.c.obj   -c C:\Users\Saar\CLionProjects\Communication-Networks\main.c
+CMakeFiles/Copy.dir/src/main.c.obj: CMakeFiles/Copy.dir/flags.make
+CMakeFiles/Copy.dir/src/main.c.obj: ../src/main.c
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\Saar\CLionProjects\Communication-Networks\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/Copy.dir/src/main.c.obj"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -o CMakeFiles\Copy.dir\src\main.c.obj   -c C:\Users\Saar\CLionProjects\Communication-Networks\src\main.c
 
-CMakeFiles/Copy.dir/main.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Copy.dir/main.c.i"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\Saar\CLionProjects\Communication-Networks\main.c > CMakeFiles\Copy.dir\main.c.i
+CMakeFiles/Copy.dir/src/main.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/Copy.dir/src/main.c.i"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E C:\Users\Saar\CLionProjects\Communication-Networks\src\main.c > CMakeFiles\Copy.dir\src\main.c.i
 
-CMakeFiles/Copy.dir/main.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Copy.dir/main.c.s"
-	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\Saar\CLionProjects\Communication-Networks\main.c -o CMakeFiles\Copy.dir\main.c.s
+CMakeFiles/Copy.dir/src/main.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/Copy.dir/src/main.c.s"
+	C:\MinGW\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S C:\Users\Saar\CLionProjects\Communication-Networks\src\main.c -o CMakeFiles\Copy.dir\src\main.c.s
 
-CMakeFiles/Copy.dir/main.c.obj.requires:
+CMakeFiles/Copy.dir/src/main.c.obj.requires:
 
-.PHONY : CMakeFiles/Copy.dir/main.c.obj.requires
+.PHONY : CMakeFiles/Copy.dir/src/main.c.obj.requires
 
-CMakeFiles/Copy.dir/main.c.obj.provides: CMakeFiles/Copy.dir/main.c.obj.requires
-	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/main.c.obj.provides.build
-.PHONY : CMakeFiles/Copy.dir/main.c.obj.provides
+CMakeFiles/Copy.dir/src/main.c.obj.provides: CMakeFiles/Copy.dir/src/main.c.obj.requires
+	$(MAKE) -f CMakeFiles\Copy.dir\build.make CMakeFiles/Copy.dir/src/main.c.obj.provides.build
+.PHONY : CMakeFiles/Copy.dir/src/main.c.obj.provides
 
-CMakeFiles/Copy.dir/main.c.obj.provides.build: CMakeFiles/Copy.dir/main.c.obj
+CMakeFiles/Copy.dir/src/main.c.obj.provides.build: CMakeFiles/Copy.dir/src/main.c.obj
 
 
 # Object files for target Copy
 Copy_OBJECTS = \
-"CMakeFiles/Copy.dir/main.c.obj"
+"CMakeFiles/Copy.dir/src/main.c.obj"
 
 # External object files for target Copy
 Copy_EXTERNAL_OBJECTS =
 
-Copy.exe: CMakeFiles/Copy.dir/main.c.obj
+Copy.exe: CMakeFiles/Copy.dir/src/main.c.obj
 Copy.exe: CMakeFiles/Copy.dir/build.make
 Copy.exe: CMakeFiles/Copy.dir/linklibs.rsp
 Copy.exe: CMakeFiles/Copy.dir/objects1.rsp
@@ -100,7 +100,7 @@ CMakeFiles/Copy.dir/build: Copy.exe
 
 .PHONY : CMakeFiles/Copy.dir/build
 
-CMakeFiles/Copy.dir/requires: CMakeFiles/Copy.dir/main.c.obj.requires
+CMakeFiles/Copy.dir/requires: CMakeFiles/Copy.dir/src/main.c.obj.requires
 
 .PHONY : CMakeFiles/Copy.dir/requires
 

@@ -76,7 +76,7 @@
 				</MakeCommands>
 			</Target>
 		</Build>
-		<Unit filename="C:/Users/Saar/CLionProjects/Communication-Networks/main.c">
+		<Unit filename="C:/Users/Saar/CLionProjects/Communication-Networks/src/main.c">
 			<Option target="Copy"/>
 		</Unit>
 		<Unit filename="C:/Users/Saar/CLionProjects/Communication-Networks/CMakeLists.txt">
