@@ -31,14 +31,12 @@ int authorize_user(char* user_creds_input, char** usernames, char** passwords){
 }
 
 void send_courses_list(int socket){
-    char num_of_courses_str[MAX_COURSES_NUMBER_LENGTH] = {0};
-    itoa(actual_num_of_courses, num_of_courses_str, 10);
-    send_all(socket, num_of_courses_str, MAX_COURSES_NUMBER_LENGTH);
     for(int i=0; i < actual_num_of_courses; i++){
         char course_line_str[MAX_COURSE_LINE_LENGTH] = {0};
         sprintf(course_line_str, "%d %s", courses[i].course_id, courses[i].course_name);
         send_all(socket, course_line_str, strlen(course_line_str));
     }
+    send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
 }
 
 void add_course_to_list(int socket, char* client_input){
@@ -50,17 +48,16 @@ void add_course_to_list(int socket, char* client_input){
     char course_name[MAX_COURSE_NAME_LENGTH] = {0};
     sscanf(client_input, "%d %s", &course_number, course_name);
     //check if this course already exists
-    char already_exists_message[29] = {0};
     for(int i=0; i < actual_num_of_courses; i++){
         if(courses[i].course_id == course_number){
-            sprintf(already_exists_message, "%d exists in the database!", course_number);
-            send_all(socket, already_exists_message, strlen(already_exists_message));
+            send_all(socket, FAIL_MESSAGE, strlen(FAIL_MESSAGE));
             return;
         }
     }
     courses[actual_num_of_courses].course_id = course_number;
     strcpy(courses[actual_num_of_courses].course_name, course_name);
     actual_num_of_courses++;
+    send_all(socket, OK_MESSAGE, strlen(OK_MESSAGE));
 }
 
 void end_user_session(int* session_is_alive){
@@ -91,8 +88,8 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
             send_all(socket, line, strlen(line));
         }
     }
-    //sendinf the word end to inform there are no more rates for the specified course.
-    send_all(socket, "end", 4);
+    //sending the word end to inform there are no more rates for the specified course.
+    send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
 }
 
 void handle_user_command(int socket, char* rates_file_path, char* client_input, int* session_is_alive, char* username){
@@ -147,9 +144,11 @@ int main(int argc, char* argv[]){
 
     set_users_credentials_and_return_actual_number_of_users(users_file_path, usernames, passwords);
 
-    int sock = socket(PF_INET, SOC_STREAM, 0);
+    int sock = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in server_addr;
+    memset(&server_addr, 0, sizeof(struct sockaddr_in));
     struct sockaddr_in client_addr;
+    memset(&client_addr, 0, sizeof(struct sockaddr_in));
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_listening_port);
@@ -160,7 +159,6 @@ int main(int argc, char* argv[]){
     listen(sock, 10);
 
     char* hello_message = "Welcome! Please log in.";
-    char* failed_login_message = "Failed to login.";
     int sin_size = sizeof(struct socaddr_in);
     while(1){
         int new_sock = accept(sock, (struct sockaddr*) &client_addr, &sin_size);
@@ -171,13 +169,11 @@ int main(int argc, char* argv[]){
             recv_all(new_sock, credentials_input);
             user_index = authorize_user(credentials_input, usernames, passwords);
             if(user_index != -1){
-                char* login_success_message[37] = {0};
-                sprintf(login_success_message, "Hi %s, good to see you.", usernames[user_index]);
-                send_all(new_sock, login_success_message, strlen(login_success_message));
+                send_all(new_sock, OK_MESSAGE, strlen(OK_MESSAGE));
                 break;
             }
             else{
-                send_all(new_sock, failed_login_message, strlen(failed_login_message));
+                send_all(new_sock, FAIL_MESSAGE, strlen(FAIL_MESSAGE));
             }
         }
         int session_is_alive = 1;

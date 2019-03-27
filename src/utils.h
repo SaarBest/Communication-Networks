@@ -12,6 +12,15 @@
 #include <string.h>
 
 #define WORD_SIZE_IN_BYTES 4
+#define MAX_MESSAGE_LENGTH 2000
+#define MAX_CRED_LENGTH 16
+#define MAX_COURSE_LINE_LENGTH 106
+#define MAX_COURSE_NAME_LENGTH 101
+#define MAX_TEXT_RATE_LENGTH 1025
+#define END_MESSAGE "end"
+#define OK_MESSAGE "ok"
+#define FAIL_MESSAGE "fail"
+#define EMPTY_STRING ""
 
 void throwError();
 
