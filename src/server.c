@@ -3,7 +3,9 @@
 struct Course courses[MAX_NUM_OF_COURSES];
 int actual_num_of_courses = 0;
 
-void set_users_credentials_and_return_actual_number_of_users(char* users_file_path, char** usernames, char** passwords){
+void set_users_credentials_and_return_actual_number_of_users(char* users_file_path,
+                                                             char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH],
+                                                             char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH]){
     FILE* fp;
     fp = fopen(users_file_path, "r");
     if(fp == NULL){
@@ -16,9 +18,10 @@ void set_users_credentials_and_return_actual_number_of_users(char* users_file_pa
     }
 }
 
-int authorize_user(char* user_creds_input, char** usernames, char** passwords){
-    char* username[MAX_CRED_LENGTH] = {0};
-    char* password[MAX_CRED_LENGTH] = {0};
+int authorize_user(char* user_creds_input, char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH],
+                   char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH]){
+    char username[MAX_CRED_LENGTH] = {0};
+    char password[MAX_CRED_LENGTH] = {0};
     if(sscanf(user_creds_input, "%s %s", username, password) != 2){
         return -1;
     }
@@ -80,8 +83,8 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
     FILE* fp = fopen(rates_file_path, "r");
     if(!fp){throwError();}
     char* line;
-    int line_len;
-    while(getline(&line, &line_len, fp) != -1){
+    while(!feof(fp)){
+        fgets(line, MAX_MESSAGE_LENGTH + 1, fp);
         int course_number;
         sscanf(line, "%d", &course_number);
         if(requeted_course_number == course_number){
@@ -127,7 +130,7 @@ int main(int argc, char* argv[]){
     }
 
     //create rates data file.
-    char* path[2000] = {0};
+    char path[2000] = {0};
     sprintf(path, "%s/%s", data_dir_path, RATES_FILE_NAME);
     FILE* fp = fopen(path, "w");
     if(!fp){throwError();}
@@ -152,16 +155,16 @@ int main(int argc, char* argv[]){
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_listening_port);
-    server_addr.sin_addr = htonl(INADDR_ANY);
+    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(sock, &server_addr, sizeof(server_addr));
+    bind(sock, (struct sockaddr*)&server_addr, sizeof(struct socaddr_in));
 
     listen(sock, 10);
 
     char* hello_message = "Welcome! Please log in.";
-    int sin_size = sizeof(struct socaddr_in);
+    socklen_t sin_size = sizeof(struct socaddr_in);
     while(1){
-        int new_sock = accept(sock, (struct sockaddr*) &client_addr, &sin_size);
+        int new_sock = accept(sock, (struct sockaddr *) &client_addr, &sin_size);
         send_all(new_sock, hello_message, strlen(hello_message));
         int user_index;
         while(1){
@@ -178,7 +181,7 @@ int main(int argc, char* argv[]){
         }
         int session_is_alive = 1;
         while(session_is_alive){
-            char* client_input[MAX_MESSAGE_LENGTH] = {0};
+            char client_input[MAX_MESSAGE_LENGTH] = {0};
             recv_all(new_sock, client_input);
             handle_user_command(new_sock, path, client_input, &session_is_alive, usernames[user_index]);
         }

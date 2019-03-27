@@ -11,7 +11,6 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <errno.h>
-#include <psdk_inc/_ip_types.h>
 #include <stdio.h>
 #include <string.h>
 
