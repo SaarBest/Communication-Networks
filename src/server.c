@@ -82,7 +82,7 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
     sscanf(client_input, "%d", &requeted_course_number);
     FILE* fp = fopen(rates_file_path, "r");
     if(!fp){throwError();}
-    char* line;
+    char line[MAX_MESSAGE_LENGTH];
     while(!feof(fp)){
         fgets(line, MAX_MESSAGE_LENGTH + 1, fp);
         int course_number;
