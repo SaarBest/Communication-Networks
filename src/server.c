@@ -157,12 +157,12 @@ int main(int argc, char* argv[]){
     server_addr.sin_port = htons(server_listening_port);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(sock, (struct sockaddr*)&server_addr, sizeof(struct socaddr_in));
+    bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in));
 
     listen(sock, 10);
 
     char* hello_message = "Welcome! Please log in.";
-    socklen_t sin_size = sizeof(struct socaddr_in);
+    socklen_t sin_size = sizeof(struct sockaddr_in);
     while(1){
         int new_sock = accept(sock, (struct sockaddr *) &client_addr, &sin_size);
         send_all(new_sock, hello_message, strlen(hello_message));
