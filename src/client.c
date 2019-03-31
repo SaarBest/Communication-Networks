@@ -110,15 +110,13 @@ void send_add_course_command(int socket,char* user_input){
             print_illegal_command();
             return;
         }
-        strncpy(arr_copy, text, strlen(text));
-        total_name_length += strlen(text) + 1;
+        total_name_length += strlen(text);
         if(total_name_length >= MAX_COURSE_NAME_LENGTH){
             print_illegal_command();
             return;
         }
+        strncpy(arr_copy, text, strlen(text));
         arr_copy += strlen(text);
-        arr_copy[0] = ' ';
-        arr_copy++;
         if(text[strlen(text)-1] == '\"'){
             text = strtok(NULL, delim);
             if(!text){
@@ -129,6 +127,13 @@ void send_add_course_command(int socket,char* user_input){
                 return;
             }
         }
+        total_name_length++;
+        if(total_name_length >= MAX_COURSE_NAME_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        arr_copy[0] = ' ';
+        arr_copy++;
         text = strtok(NULL, delim);
     }
 
@@ -175,15 +180,13 @@ void send_rate_course_command(int socket, char* user_input){
             print_illegal_command();
             return;
         }
-        strncpy(arr_copy, text, strlen(text));
-        total_rate_length += strlen(text) + 1;
+        total_rate_length += strlen(text);
         if(total_rate_length >= MAX_TEXT_RATE_LENGTH){
             print_illegal_command();
             return;
         }
+        strncpy(arr_copy, text, strlen(text));
         arr_copy += strlen(text);
-        arr_copy[0] = ' ';
-        arr_copy++;
         if(text[strlen(text)-1] == '\"'){
             text = strtok(NULL, delim);
             if(!text){
@@ -194,6 +197,13 @@ void send_rate_course_command(int socket, char* user_input){
                 return;
             }
         }
+        total_rate_length++;
+        if(total_rate_length >= MAX_TEXT_RATE_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        arr_copy[0] = ' ';
+        arr_copy++;
         text = strtok(NULL, delim);
     }
     if(!result[1] || !result[2]){
@@ -207,8 +217,7 @@ void send_rate_course_command(int socket, char* user_input){
     int course_number_to_rate = atoi(result[1]);
     int rate_value = atoi(result[2]);
     char *rate_text = arr;
-    if((course_number_to_rate < 0 || course_number_to_rate > 9999) ||(rate_value < 0 || rate_value > 100)
-            || strlen(rate_text)){
+    if((course_number_to_rate < 0 || course_number_to_rate > 9999) ||(rate_value < 0 || rate_value > 100)){
         print_illegal_command();
         return;
     }
