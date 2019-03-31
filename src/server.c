@@ -78,8 +78,8 @@ void add_course_rate(char* rates_file_path, char* client_input, char* username){
     char delim1[2] = " ";
     char delim2[1] = "";
     result[0] = strtok(client_input, delim1);
-    result[1] = strtok(client_input, delim1);
-    result[2] = strtok(client_input, delim2);
+    result[1] = strtok(NULL, delim1);
+    result[2] = strtok(NULL, delim2);
     int course_number = atoi(result[0]), rate_value = atoi(result[1]);
     char *rate_str = result[2];
     if(fprintf(fp, "%d %s %d %s\n", course_number, username, rate_value, rate_str) < 0){throwError();}
