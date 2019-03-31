@@ -83,7 +83,7 @@ void send_list_of_courses_command(int socket, char* user_input){
 }
 
 int is_int(char* str){
-    for(int i=0; i<strlen(str), i++){
+    for(int i=0; i<strlen(str); i++){
         if(!('0'<=str[i] && str[i] <='9')){return 0;}
     }
     return 1;
