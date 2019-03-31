@@ -47,9 +47,13 @@ void add_course_to_list(int socket, char* client_input){
     int course_number = atoi(course_number_str);
     char course_name[MAX_COURSE_NAME_LENGTH] = {0};
     sscanf(client_input, "%s %s", course_number_str, course_name);*/
-    int course_number;
-    char course_name[MAX_COURSE_NAME_LENGTH] = {0};
-    sscanf(client_input, "%d %s", &course_number, course_name);
+    char *result[2];
+    char delim1[2] = " ";
+    char delim2[1] = "";
+    result[0] = strtok(client_input, delim1);
+    result[1] = strtok(client_input, delim2);
+    int course_number = atoi(result[0]);
+    char *course_name = result[1];
     //check if this course already exists
     for(int i=0; i < actual_num_of_courses; i++){
         if(courses[i].course_id == course_number){
@@ -70,9 +74,14 @@ void end_user_session(int* session_is_alive){
 void add_course_rate(char* rates_file_path, char* client_input, char* username){
     FILE* fp = fopen(rates_file_path, "a");
     if(!fp){throwError();}
-    int course_number, rate_value;
-    char rate_str[MAX_TEXT_RATE_LENGTH] = {0};
-    sscanf(client_input, "%d %d %s", &course_number, &rate_value, rate_str);
+    char *result[3];
+    char delim1[2] = " ";
+    char delim2[1] = "";
+    result[0] = strtok(client_input, delim1);
+    result[1] = strtok(client_input, delim1);
+    result[2] = strtok(client_input, delim2);
+    int course_number = atoi(result[0]), rate_value = atoi(result[1]);
+    char *rate_str = result[2];
     if(fprintf(fp, "%d %s %d %s\n", course_number, username, rate_value, rate_str) < 0){throwError();}
     fclose(fp);
 }
