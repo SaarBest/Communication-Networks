@@ -14,7 +14,7 @@ void send_all(int socket, char* buffer, int len){
     int bytes_left = WORD_SIZE_IN_BYTES;
     int n = 0;
 
-    while(total < len){
+    while(total < WORD_SIZE_IN_BYTES){
         n = send(socket, message_length_str+total, bytes_left, 0);
         if(n < 0){throwError();}
         total+=n;

@@ -40,6 +40,7 @@ int authorize(int socket){
             printf("Failed to login.\n");
             return 0;
         }
+        password = result2[1];
         char credentials[32] = {0};
         sprintf(credentials, "%s %s", username, password);
         send_all(socket, credentials, strlen(credentials));
