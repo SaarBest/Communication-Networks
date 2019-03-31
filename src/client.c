@@ -250,12 +250,19 @@ void send_get_rate_command(int socket, char* user_input){
 
     char rate_message[MAX_MESSAGE_LENGTH] = {0};
     recv_all(socket, rate_message);
+
+    char *result2[4];
+    char delim2[1] = "";
+
     while(strcmp(rate_message,END_MESSAGE)){
-        char username[MAX_CRED_LENGTH] = {0};
-        int rate_value;
-        char rate_text[MAX_TEXT_RATE_LENGTH] = {0};
-        sscanf(rate_message,"%d %s %d %s",&course_number, username, &rate_value, rate_text);
-        printf("%s:\t%d\t%s\n",username, rate_value, rate_text);
+        result2[0] = strtok(rate_message, delim);
+        result2[1] = strtok(NULL, delim);
+        result2[2] = strtok(NULL, delim);
+        result2[3] = strtok(NULL, delim2);
+        char *username = result2[1];
+        int rate_value = atoi(result2[2]);
+        char *rate_text = result2[3];
+        printf("%s:\t%d\t%s",username, rate_value, rate_text);
         for(int i=0; i<MAX_MESSAGE_LENGTH; i++) {rate_message[i]=0; }
         recv_all(socket, rate_message);
     }
