@@ -4,8 +4,8 @@ struct Course courses[MAX_NUM_OF_COURSES];
 int actual_num_of_courses = 0;
 
 void set_users_credentials(char *users_file_path,
-                           char *usernames[MAX_CRED_LENGTH],
-                           char *passwords[MAX_CRED_LENGTH]){
+                           char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH],
+                           char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH]){
     FILE* fp;
     fp = fopen(users_file_path, "r");
     if(fp == NULL){
