@@ -51,7 +51,7 @@ void add_course_to_list(int socket, char* client_input){
     char delim1[2] = " ";
     char delim2[1] = "";
     result[0] = strtok(client_input, delim1);
-    result[1] = strtok(client_input, delim2);
+    result[1] = strtok(NULL, delim2);
     int course_number = atoi(result[0]);
     char *course_name = result[1];
     //check if this course already exists

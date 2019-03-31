@@ -72,11 +72,14 @@ void send_list_of_courses_command(int socket, char* user_input){
     }
     send_all(socket, LIST_OF_COURSES_MESSAGE, COMMAND_MESSAGE_LENGTH);
     char course_message[MAX_COURSE_LINE_LENGTH] = {0};
+    char delim1[2] = " ";
+    char delim2[1] = "";
     recv_all(socket, course_message);
     while(strcmp(course_message,END_MESSAGE)){
-        int course_number;
-        char course_name[MAX_COURSE_NAME_LENGTH] = {0};
-        sscanf(course_message,"%d %s",&course_number,course_name);
+        result[0] = strtok(course_message, delim1);
+        result[1] = strtok(NULL, delim2);
+        int course_number = atoi(result[0]);
+        char *course_name = result[1];
         printf("%d:\t%s\n",course_number,course_name);
         for(int i=0; i<MAX_COURSE_LINE_LENGTH; i++) {course_message[i]=0; }
         recv_all(socket, course_message);
