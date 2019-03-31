@@ -49,7 +49,7 @@ void recv_all(int socket, char* buffer){
     }
 
     memcpy(&message_length, message_length_str, WORD_SIZE_IN_BYTES);
-    int len = ntohl(message_length);
+    len = ntohl(message_length);
 
     total = 0;
     bytes_left = len;

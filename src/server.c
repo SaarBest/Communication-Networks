@@ -3,9 +3,9 @@
 struct Course courses[MAX_NUM_OF_COURSES];
 int actual_num_of_courses = 0;
 
-void set_users_credentials_and_return_actual_number_of_users(char* users_file_path,
-                                                             char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH],
-                                                             char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH]){
+void set_users_credentials(char *users_file_path,
+                           char **usernames,
+                           char **passwords){
     FILE* fp;
     fp = fopen(users_file_path, "r");
     if(fp == NULL){
@@ -82,7 +82,7 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
     sscanf(client_input, "%d", &requeted_course_number);
     FILE* fp = fopen(rates_file_path, "r");
     if(!fp){throwError();}
-    char line[MAX_MESSAGE_LENGTH];
+    char line[MAX_MESSAGE_LENGTH] = {0};
     while(!feof(fp)){
         fgets(line, MAX_MESSAGE_LENGTH + 1, fp);
         int course_number;
@@ -145,7 +145,7 @@ int main(int argc, char* argv[]){
         }
     }
 
-    set_users_credentials_and_return_actual_number_of_users(users_file_path, usernames, passwords);
+    set_users_credentials(users_file_path, usernames, passwords);
 
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     struct sockaddr_in server_addr;

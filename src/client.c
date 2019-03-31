@@ -4,11 +4,42 @@
 
 #include "client.h"
 
-void authorize(int socket){
+int is_valid_authorization_input(char* first, char* second, char* third, char* first_value){
+    if(!first || !second){
+        return 0;
+    }
+    if(strcmp(first, first_value) || !(strlen(second) > 0 && strlen(second)<MAX_CRED_LENGTH) || third){
+        return 0;
+    }
+    return 1;
+}
+
+int authorize(int socket){
     while(1){
-        char username[MAX_CRED_LENGTH];
-        char password[MAX_CRED_LENGTH];
-        scanf("User: %s\nPassword: %s", username, password);
+        char user_input[30];
+        char password_input[30];
+        char *username = NULL, *password = NULL;
+        int isValid = 1;
+        fgets(user_input, 30, stdin);
+        const char delim[3] = " \n";
+        char *result1[3], *result2[3];
+        result1[0] = strtok(user_input, delim);
+        result1[1] = strtok(NULL, delim);
+        result1[2] = strtok(NULL, delim);
+        if(!is_valid_authorization_input(result1[0], result1[1], result1[2], "User:")){
+            isValid = 0;
+        }
+        else{
+            username = result1[1];
+        }
+        fgets(password_input, 30, stdin);
+        result2[0] = strtok(password_input, delim);
+        result2[1] = strtok(NULL, delim);
+        result2[2] = strtok(NULL, delim);
+        if(!is_valid_authorization_input(result2[0], result2[1], result2[2], "Password:") || !isValid){
+            printf("Failed to login.\n");
+            return 0;
+        }
         char credentials[32] = {0};
         sprintf(credentials, "%s %s", username, password);
         send_all(socket, credentials, strlen(credentials));
@@ -16,10 +47,11 @@ void authorize(int socket){
         recv_all(socket, response);
         if(!strcmp(response,OK_MESSAGE)){
             printf("Hi %s, good to see you.\n", username);
-            break;
+            return 1;
         }
         else{
             printf("Failed to login.\n");
+            return 0;
         }
     }
 }
@@ -29,9 +61,11 @@ void print_illegal_command(){
 }
 
 void send_list_of_courses_command(int socket, char* user_input){
-    char command_validity[2] = {0};
-    sscanf(user_input, "courses_list%c", command_validity);
-    if(strcmp(command_validity, EMPTY_STRING)){
+    char *result[2];
+    char delim[3] = " \n";
+    result[0] = strtok(user_input, delim);
+    result[1] = strtok(NULL, delim);
+    if(result[1]){
         print_illegal_command();
         return;
     }
@@ -48,12 +82,32 @@ void send_list_of_courses_command(int socket, char* user_input){
     }
 }
 
+int is_int(char* str){
+    for(int i=0; i<strlen(str), i++){
+        if(!('0'<=str[i] && str[i] <='9')){return 0;}
+    }
+    return 1;
+}
+
 void send_add_course_command(int socket,char* user_input){
-    char command_validity[2] = {0};
-    int course_number_to_add;
-    char course_name_to_add[MAX_COURSE_NAME_LENGTH] = {0};
-    sscanf(user_input, "add_course %d %s %c", &course_number_to_add, course_name_to_add, command_validity);
-    if(strcmp(command_validity, EMPTY_STRING) || (course_number_to_add < 0 || course_number_to_add > 9999)){
+    char *result[4];
+    char delim[3] = " \n";
+    result[0] = strtok(user_input, delim);
+    result[1] = strtok(NULL, delim);
+    result[2] = strtok(NULL, delim);
+    result[3] = strtok(NULL, delim);
+    if(!result[1] || !result[2]){
+        print_illegal_command();
+        return;
+    }
+    if(!is_int(result[1]) || !(result[2][0] == '\"' && result[2][strlen(result[2])-1] == '\"') ||
+       strlen(result[2]) == 2 || result[3]){
+        print_illegal_command();
+        return;
+    }
+    int course_number_to_add = atoi(result[1]);
+    char *course_name_to_add = result[2];
+    if(!(0<=course_number_to_add && course_number_to_add<=9999)){
         print_illegal_command();
         return;
     }
@@ -71,13 +125,26 @@ void send_add_course_command(int socket,char* user_input){
 }
 
 void send_rate_course_command(int socket, char* user_input){
-    char command_validity[2] = {0};
-    int course_number_to_rate;
-    int rate_value;
-    char rate_text[MAX_TEXT_RATE_LENGTH] = {0};
-    sscanf(user_input, "rate_course %d %d %s %c", &course_number_to_rate, &rate_value, rate_text, command_validity);
-    if(strcmp(command_validity, EMPTY_STRING) || (course_number_to_rate < 0 || course_number_to_rate > 9999)
-            ||(rate_value < 0 || rate_value > 100)){
+    char *result[5];
+    char delim[3] = " \n";
+    result[0] = strtok(user_input, delim);
+    result[1] = strtok(NULL, delim);
+    result[2] = strtok(NULL, delim);
+    result[3] = strtok(NULL, delim);
+    result[4] = strtok(NULL, delim);
+    if(!result[1] || !result[2] || !result[3]){
+        print_illegal_command();
+        return;
+    }
+    if(!is_int(result[1]) || !is_int(result[2]) ||
+       !(result[3][0] == '\"' && result[3][strlen(result[3])-1] == '\"') ||
+       strlen(result[3]) == 2 || result[4]){
+
+    }
+    int course_number_to_rate = atoi(result[1]);
+    int rate_value = atoi(result[2]);
+    char *rate_text = result[3];
+    if((course_number_to_rate < 0 || course_number_to_rate > 9999) ||(rate_value < 0 || rate_value > 100)){
         print_illegal_command();
         return;
     }
@@ -87,10 +154,17 @@ void send_rate_course_command(int socket, char* user_input){
 }
 
 void send_get_rate_command(int socket, char* user_input){
-    char command_validity[2] = {0};
-    int course_number;
-    sscanf(user_input, "get_rate %d %c", &course_number, command_validity);
-    if(strcmp(command_validity, EMPTY_STRING) || (course_number < 0 || course_number > 9999)){
+    char *result[3];
+    char delim[3] = " \n";
+    result[0] = strtok(user_input, delim);
+    result[1] = strtok(NULL, delim);
+    result[2] = strtok(NULL, delim);
+    if(!result[1] || !is_int(result[1]) || result[2]){
+        print_illegal_command();
+        return;
+    }
+    int course_number = atoi(result[1]);
+    if(course_number < 0 || course_number > 9999){
         print_illegal_command();
         return;
     }
@@ -112,10 +186,11 @@ void send_get_rate_command(int socket, char* user_input){
 }
 
 void send_quit_command(int socket, char* user_input, int* session_is_alive){
-    char command_validity[2] = {0};
-    int course_number;
-    sscanf(user_input, "quit%c", command_validity);
-    if(strcmp(command_validity, EMPTY_STRING)){
+    char *result[2];
+    char delim[3] = " \n";
+    result[0] = strtok(user_input, delim);
+    result[1] = strtok(NULL, delim);
+    if(result[1]){
         print_illegal_command();
         return;
     }
@@ -124,7 +199,7 @@ void send_quit_command(int socket, char* user_input, int* session_is_alive){
 }
 
 void handle_command(int socket, char* user_input, int* session_is_alive){
-    char command_prefix[MAX_COMMAND_LENGTH] = {0};
+    char command_prefix[MAX_MESSAGE_LENGTH] = {0};
     sscanf(user_input, "%s", command_prefix);
     if(!strcmp(command_prefix, COMMAND_LIST_OF_COURSES)){
         send_list_of_courses_command(socket, user_input);
@@ -170,12 +245,12 @@ int main(int argc, char* argv[]){
     recv_all(sock, message);
     printf("%s\n", message);
 
-    authorize(sock);
+    while(!authorize(sock));
 
     int session_is_alive = 1;
     while(session_is_alive){
         char user_input[MAX_MESSAGE_LENGTH] = {0};
-        scanf("%s", user_input);
+        fgets(user_input, MAX_MESSAGE_LENGTH, stdin);
         handle_command(sock, user_input, &session_is_alive);
     }
 }

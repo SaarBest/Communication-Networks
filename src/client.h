@@ -18,7 +18,6 @@
 #include "utils.h"
 
 #define LOCALHOST "localhost"
-#define MAX_COMMAND_LENGTH 16
 #define COMMAND_LIST_OF_COURSES "list_of_courses"
 #define COMMAND_ADD_COURSE "add_course"
 #define COMMAND_RATE_COURSE "rate_course"
