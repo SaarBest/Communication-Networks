@@ -70,13 +70,9 @@ void end_user_session(int* session_is_alive){
 void add_course_rate(char* rates_file_path, char* client_input, char* username){
     FILE* fp = fopen(rates_file_path, "a");
     if(!fp){throwError();}
-    char *result[3];
-    char delim[2] = " ";
-    result[0] = strtok(client_input, delim);
-    result[1] = strtok(NULL, delim);
-    result[2] = strtok(NULL, delim);
-    int course_number = atoi(result[0]), rate_value = atoi(result[1]);
-    char *rate_str = result[2];
+    int course_number, rate_value;
+    char rate_str[MAX_TEXT_RATE_LENGTH] = {0};
+    sscanf(client_input, "%d %d %s", &course_number, &rate_value, rate_str);
     if(fprintf(fp, "%d %s %d %s\n", course_number, username, rate_value, rate_str) < 0){throwError();}
     fclose(fp);
 }

@@ -91,23 +91,51 @@ int is_int(char* str){
 }
 
 void send_add_course_command(int socket,char* user_input){
-    char *result[4];
+    char *result[2];
     char delim[3] = " \n";
     result[0] = strtok(user_input, delim);
     result[1] = strtok(NULL, delim);
-    result[2] = strtok(NULL, delim);
-    result[3] = strtok(NULL, delim);
-    if(!result[1] || !result[2]){
+
+    char* text = NULL;
+    char arr[MAX_COURSE_NAME_LENGTH] = {0};
+    char* arr_copy = arr;
+    text = strtok(NULL, delim);
+    if(text[0] != '\"'){
         print_illegal_command();
         return;
     }
-    if(!is_int(result[1]) || !(result[2][0] == '\"' && result[2][strlen(result[2])-1] == '\"') ||
-       strlen(result[2]) == 2 || result[3]){
+    int total_name_length = 0;
+    while(1){
+        if(!text){
+            print_illegal_command();
+            return;
+        }
+        strncpy(arr_copy, text, strlen(text));
+        total_name_length += strlen(text);
+        if(total_name_length >= MAX_COURSE_NAME_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        arr_copy += strlen(text);
+        if(text[strlen(text)-1] == '\"'){
+            text = strtok(NULL, delim);
+            if(!text){
+                break;
+            }
+            else{
+                print_illegal_command();
+                return;
+            }
+        }
+        text = strtok(NULL, delim);
+    }
+
+    if(!result[1] || !is_int(result[1])){
         print_illegal_command();
         return;
     }
     int course_number_to_add = atoi(result[1]);
-    char *course_name_to_add = result[2];
+    char *course_name_to_add = arr;
     if(!(0<=course_number_to_add && course_number_to_add<=9999)){
         print_illegal_command();
         return;
@@ -126,26 +154,57 @@ void send_add_course_command(int socket,char* user_input){
 }
 
 void send_rate_course_command(int socket, char* user_input){
-    char *result[5];
+    char *result[3];
     char delim[3] = " \n";
     result[0] = strtok(user_input, delim);
     result[1] = strtok(NULL, delim);
     result[2] = strtok(NULL, delim);
-    result[3] = strtok(NULL, delim);
-    result[4] = strtok(NULL, delim);
-    if(!result[1] || !result[2] || !result[3]){
+    char* text = NULL;
+    char arr[MAX_TEXT_RATE_LENGTH] = {0};
+    char* arr_copy = arr;
+    text = strtok(NULL, delim);
+    if(text[0] != '\"'){
         print_illegal_command();
         return;
     }
-    if(!is_int(result[1]) || !is_int(result[2]) ||
-       !(result[3][0] == '\"' && result[3][strlen(result[3])-1] == '\"') ||
-       strlen(result[3]) == 2 || result[4]){
-
+    int total_rate_length = 0;
+    while(1){
+        if(!text){
+            print_illegal_command();
+            return;
+        }
+        strncpy(arr_copy, text, strlen(text));
+        total_rate_length += strlen(text);
+        if(total_rate_length >= MAX_TEXT_RATE_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        arr_copy += strlen(text);
+        if(text[strlen(text)-1] == '\"'){
+            text = strtok(NULL, delim);
+            if(!text){
+                break;
+            }
+            else{
+                print_illegal_command();
+                return;
+            }
+        }
+        text = strtok(NULL, delim);
+    }
+    if(!result[1] || !result[2]){
+        print_illegal_command();
+        return;
+    }
+    if(!is_int(result[1]) || !is_int(result[2])){
+        print_illegal_command();
+        return;
     }
     int course_number_to_rate = atoi(result[1]);
     int rate_value = atoi(result[2]);
-    char *rate_text = result[3];
-    if((course_number_to_rate < 0 || course_number_to_rate > 9999) ||(rate_value < 0 || rate_value > 100)){
+    char *rate_text = arr;
+    if((course_number_to_rate < 0 || course_number_to_rate > 9999) ||(rate_value < 0 || rate_value > 100)
+            || strlen(rate_text)){
         print_illegal_command();
         return;
     }
