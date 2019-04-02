@@ -328,7 +328,7 @@ int main(int argc, char* argv[]){
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
-    if(inet_pton(AF_INET, server_hostname, &server_addr.sin_addr) < 1){throwError(); }
+    if(inet_pton(AF_INET, server_hostname, &server_addr.sin_addr) < 0){throwError(); }
 
     if(connect(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr)) < 0){throwError(); }
 
