@@ -351,4 +351,6 @@ int main(int argc, char* argv[]){
         fgets(user_input, MAX_MESSAGE_LENGTH, stdin);
         handle_command(sock, user_input, &session_is_alive);
     }
+
+    close(sock);
 }

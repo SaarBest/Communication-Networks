@@ -210,5 +210,7 @@ int main(int argc, char* argv[]){
             recv_all(new_sock, client_input);
             handle_user_command(new_sock, path, client_input, &session_is_alive, usernames[user_index]);
         }
+        close(new_sock);
     }
+    close(sock);
 }
