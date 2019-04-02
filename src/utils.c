@@ -5,6 +5,13 @@ void throwError(){
     exit(0);
 }
 
+int is_int(char* str){
+    for(int i=0; i<strlen(str); i++){
+        if(!('0'<=str[i] && str[i] <='9')){return 0;}
+    }
+    return 1;
+}
+
 void send_all(int socket, char* buffer, int len){
     int message_length = htonl(len);
     char message_length_str[WORD_SIZE_IN_BYTES];

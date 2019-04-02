@@ -86,13 +86,6 @@ void send_list_of_courses_command(int socket, char* user_input){
     }
 }
 
-int is_int(char* str){
-    for(int i=0; i<strlen(str); i++){
-        if(!('0'<=str[i] && str[i] <='9')){return 0;}
-    }
-    return 1;
-}
-
 void send_add_course_command(int socket,char* user_input){
     char *result[2];
     char delim[3] = " \n";
@@ -307,10 +300,14 @@ void handle_command(int socket, char* user_input, int* session_is_alive){
 int main(int argc, char* argv[]){
     char* server_hostname = LOCALHOST;
     int server_port = 1337;
-    if(argc > 1){
-        server_hostname = argv[1];
-        server_port = atoi(argv[2]);
+    if(argc <= 3){
+        if(argc > 1){
+            server_hostname = argv[1];
+            server_port = atoi(argv[2]);
+        }
     }
+    else
+
 
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock < 0){throwError();}
