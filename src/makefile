@@ -11,10 +11,10 @@ $(EXEC_SERVER): $(SERVER_OBJS)
 $(EXEC_CLIENT): $(CLIENT_OBJS)
 	$(CC) $(CLIENT_OBJS) -o $@
 utils.o: utils.c utils.h
-	$(CC) $(COMP_FLAG) -c utils.c
+	$(CC) $(FLAGS) -c utils.c
 server.o: server.c server.h utils.h
-	$(CC) $(COMP_FLAG) -c server.c
+	$(CC) $(FLAGS) -c server.c
 client.o: client.c client.h utils.h
-	$(CC) $(COMP_FLAG) -c client.c
+	$(CC) $(FLAGS) -c client.c
 clean:
 	rm -f $(SERVER_OBJS) $(CLIENT_OBJS) $(EXEC_SERVER) $(EXEC_CLIENT)
