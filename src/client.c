@@ -42,7 +42,7 @@ int authorize(int socket){
         }
         password = result2[1];
         char credentials[32] = {0};
-        sprintf(credentials, "%s %s", username, password);
+        if(sprintf(credentials, "%s %s", username, password) < 0){throwError(); }
         send_all(socket, credentials, strlen(credentials));
         char response[5] = {0};
         recv_all(socket, response);
@@ -151,7 +151,9 @@ void send_add_course_command(int socket,char* user_input){
         return;
     }
     char command_message[108] = {0};
-    sprintf(command_message, "%s %d %s", ADD_COURSE_MESSAGE, course_number_to_add, course_name_to_add);
+    if(sprintf(command_message, "%s %d %s", ADD_COURSE_MESSAGE, course_number_to_add, course_name_to_add) < 0){
+        throwError();
+    }
     send_all(socket, command_message, strlen(command_message));
     char response_massage[5] = {0};
     recv_all(socket, response_massage);
@@ -225,7 +227,9 @@ void send_rate_course_command(int socket, char* user_input){
         return;
     }
     char command_message[MAX_MESSAGE_LENGTH] = {0};
-    sprintf(command_message, "%s %d %d %s", RATE_COURSE_MESSAGE, course_number_to_rate, rate_value, rate_text);
+    if(sprintf(command_message, "%s %d %d %s", RATE_COURSE_MESSAGE, course_number_to_rate, rate_value, rate_text) < 0){
+        throwError();
+    }
     send_all(socket, command_message, strlen(command_message));
 }
 
@@ -245,7 +249,9 @@ void send_get_rate_command(int socket, char* user_input){
         return;
     }
     char command_message[7] = {0};
-    sprintf(command_message, "%s %d", GET_RATE_MESSAGE, course_number);
+    if(sprintf(command_message, "%s %d", GET_RATE_MESSAGE, course_number) < 0){
+        throwError();
+    }
     send_all(socket, command_message, strlen(command_message));
 
     char rate_message[MAX_MESSAGE_LENGTH] = {0};
@@ -309,7 +315,9 @@ int main(int argc, char* argv[]){
     int server_port = 1337;
     if(argc > 1){
         server_hostname = argv[1];
-        server_port = atoi(argv[2]);
+        if(argc > 2){
+            server_port = atoi(argv[2]);
+        }
     }
 
     int sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -320,9 +328,9 @@ int main(int argc, char* argv[]){
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
-    inet_pton(AF_INET, server_hostname, &server_addr.sin_addr);
+    if(inet_pton(AF_INET, server_hostname, &server_addr.sin_addr) < 1){throwError(); }
 
-    connect(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr));
+    if(connect(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr)) < 0){throwError(); }
 
     char message[MAX_MESSAGE_LENGTH] = {0};
     recv_all(sock, message);
