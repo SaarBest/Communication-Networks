@@ -5,6 +5,11 @@ void throwError(){
     exit(0);
 }
 
+void throwInvalidArguments(){
+    printf("Error: Invalid arguments\n");
+    exit(0);
+}
+
 int is_int(char* str){
     for(int i=0; i<strlen(str); i++){
         if(!('0'<=str[i] && str[i] <='9')){return 0;}

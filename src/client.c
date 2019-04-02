@@ -309,10 +309,19 @@ int main(int argc, char* argv[]){
     if(argc <= 3){
         if(argc > 1){
             server_hostname = argv[1];
-            server_port = atoi(argv[2]);
+        }
+        if(argc > 2){
+            if(is_int(argv[2])) {
+                server_port = atoi(argv[2]);
+            }
+            else{
+                throwInvalidArguments();
+            }
         }
     }
-    else
+    else{
+        throwInvalidArguments();
+    }
 
 
     int sock = socket(PF_INET, SOCK_STREAM, 0);

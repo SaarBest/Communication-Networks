@@ -23,6 +23,8 @@
 
 void throwError();
 
+void throwInvalidArguments();
+
 int is_int(char* str);
 
 void send_all(int socket, char* buffer, int len);
