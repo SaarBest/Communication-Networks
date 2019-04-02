@@ -14,6 +14,7 @@ void set_users_credentials(char *users_file_path,
         fscanf(fp, "%s\t%[^\n]", usernames[i], passwords[i]);
         i++;
     }
+    fclose(fp);
 }
 
 int authorize_user(char* user_creds_input, char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH],
@@ -102,6 +103,7 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
             send_all(socket, line, strlen(line));
         }
     }
+    fclose(fp);
     //sending the word end to inform there are no more rates for the specified course.
     send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
 }

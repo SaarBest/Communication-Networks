@@ -9,6 +9,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 #define WORD_SIZE_IN_BYTES 4
 #define MAX_MESSAGE_LENGTH 2000
