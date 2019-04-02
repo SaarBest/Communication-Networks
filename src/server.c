@@ -131,12 +131,10 @@ int main(int argc, char* argv[]){
     char* users_file_path = NULL;
     char* data_dir_path = NULL;
     int server_listening_port = 1337;
-    if(argc <= 4){
-        if(argc == 3){
-            users_file_path = argv[1];
-            data_dir_path = argv[2];
-        }
-        else if(argc == 4){
+    if(argc == 3 || argc == 4){
+        users_file_path = argv[1];
+        data_dir_path = argv[2];
+        if(argc == 4){
             if(is_int(argv[3])) {
                 server_listening_port = atoi(argv[3]);
             }
@@ -144,15 +142,9 @@ int main(int argc, char* argv[]){
                 throwInvalidArguments();
             }
         }
-        else{
-            throwInvalidArguments();
-        }
     }
     else{
         throwInvalidArguments();
-    }
-    if(argc == 4){
-        server_listening_port = atoi(argv[3]);
     }
 
     //create rates data file.
