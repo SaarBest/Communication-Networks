@@ -8,9 +8,7 @@ void set_users_credentials(char *users_file_path,
                            char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH]){
     FILE* fp;
     fp = fopen(users_file_path, "r");
-    if(fp == NULL){
-        throwError();
-    }
+    if(fp == NULL){throwError();}
     int i = 0;
     while(!feof(fp)){
         fscanf(fp, "%s\t%[^\n]", usernames[i], passwords[i]);
@@ -36,7 +34,7 @@ int authorize_user(char* user_creds_input, char usernames[MAX_NUM_OF_USERS][MAX_
 void send_courses_list(int socket){
     for(int i=0; i < actual_num_of_courses; i++){
         char course_line_str[MAX_COURSE_LINE_LENGTH] = {0};
-        sprintf(course_line_str, "%d %s", courses[i].course_id, courses[i].course_name);
+        if(sprintf(course_line_str, "%d %s", courses[i].course_id, courses[i].course_name) < 0){throwError();}
         send_all(socket, course_line_str, strlen(course_line_str));
     }
     send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
@@ -87,15 +85,15 @@ void add_course_rate(char* rates_file_path, char* client_input, char* username){
 }
 
 void send_course_rates(int socket, char* rates_file_path, char* client_input){
-    int requeted_course_number;
-    sscanf(client_input, "%d", &requeted_course_number);
+    int requested_course_number;
+    sscanf(client_input, "%d", &requested_course_number);
     FILE* fp = fopen(rates_file_path, "r");
     if(!fp){throwError();}
     char line[MAX_MESSAGE_LENGTH] = {0};
     while(fgets(line, MAX_MESSAGE_LENGTH + 1, fp)){
         int course_number;
         sscanf(line, "%d", &course_number);
-        if(requeted_course_number == course_number){
+        if(requested_course_number == course_number){
             send_all(socket, line, strlen(line));
         }
     }
@@ -139,7 +137,7 @@ int main(int argc, char* argv[]){
 
     //create rates data file.
     char path[2000] = {0};
-    sprintf(path, "%s/%s", data_dir_path, RATES_FILE_NAME);
+    if(sprintf(path, "%s/%s", data_dir_path, RATES_FILE_NAME) < 0){throwError();}
     FILE* fp = fopen(path, "w");
     if(!fp){throwError();}
     fclose(fp);
@@ -156,6 +154,7 @@ int main(int argc, char* argv[]){
     set_users_credentials(users_file_path, usernames, passwords);
 
     int sock = socket(PF_INET, SOCK_STREAM, 0);
+    if(sock < 0){throwError();}
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
     struct sockaddr_in client_addr;
@@ -165,14 +164,15 @@ int main(int argc, char* argv[]){
     server_addr.sin_port = htons(server_listening_port);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in));
+    if(bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0){throwError();}
 
-    listen(sock, 10);
+    if(listen(sock, 10) < 0){throwError();}
 
     char* hello_message = "Welcome! Please log in.";
     socklen_t sin_size = sizeof(struct sockaddr_in);
     while(1){
         int new_sock = accept(sock, (struct sockaddr *) &client_addr, &sin_size);
+        if(new_sock < 0){throwError();}
         send_all(new_sock, hello_message, strlen(hello_message));
         int user_index;
         while(1){
