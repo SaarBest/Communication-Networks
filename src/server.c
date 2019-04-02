@@ -128,11 +128,13 @@ void handle_user_command(int socket, char* rates_file_path, char* client_input, 
 }
 
 int main(int argc, char* argv[]){
+    char* users_file_path = NULL;
+    char* data_dir_path = NULL;
     int server_listening_port = 1337;
     if(argc <= 4){
         if(argc == 3){
-            char* users_file_path = argv[1];
-            char* data_dir_path = argv[2];
+            users_file_path = argv[1];
+            data_dir_path = argv[2];
         }
         else if(argc == 4){
             if(is_int(argv[3])) {
