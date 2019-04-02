@@ -80,7 +80,12 @@ void add_course_rate(char* rates_file_path, char* client_input, char* username){
     result[2] = strtok(NULL, delim2);
     int course_number = atoi(result[0]), rate_value = atoi(result[1]);
     char *rate_str = result[2];
-    if(fprintf(fp, "%d %s %d %s\n", course_number, username, rate_value, rate_str) < 0){throwError();}
+    for(int i=0; i < actual_num_of_courses; i++){
+        if(courses[i].course_id == course_number){
+            if(fprintf(fp, "%d %s %d %s\n", course_number, username, rate_value, rate_str) < 0){throwError();}
+            break;
+        }
+    }
     fclose(fp);
 }
 
