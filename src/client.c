@@ -323,7 +323,6 @@ int main(int argc, char* argv[]){
         throwInvalidArguments();
     }
 
-
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock < 0){throwError();}
 
@@ -332,7 +331,8 @@ int main(int argc, char* argv[]){
 
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
-    if(inet_pton(AF_INET, server_hostname, &server_addr.sin_addr) < 0){throwError(); }
+    struct hostent *lh = gethostbyname(server_hostname);
+    if(inet_pton(AF_INET, lh->h_name, &server_addr.sin_addr) < 0){throwError(); }
 
     if(connect(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr)) < 0){throwError(); }
 
