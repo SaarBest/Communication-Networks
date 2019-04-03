@@ -91,12 +91,15 @@ void send_add_course_command(int socket,char* user_input){
     char delim[3] = " \n";
     result[0] = strtok(user_input, delim);
     result[1] = strtok(NULL, delim);
-
+    if(!result[1]){
+        print_illegal_command();
+        return;
+    }
     char* text = NULL;
     char arr[MAX_COURSE_NAME_LENGTH] = {0};
     char* arr_copy = arr;
     text = strtok(NULL, delim);
-    if(text[0] != '\"'){
+    if(!text || text[0] != '\"'){
         print_illegal_command();
         return;
     }
@@ -133,7 +136,7 @@ void send_add_course_command(int socket,char* user_input){
         text = strtok(NULL, delim);
     }
 
-    if(!result[1] || !is_int(result[1])){
+    if(!is_int(result[1])){
         print_illegal_command();
         return;
     }
@@ -164,11 +167,15 @@ void send_rate_course_command(int socket, char* user_input){
     result[0] = strtok(user_input, delim);
     result[1] = strtok(NULL, delim);
     result[2] = strtok(NULL, delim);
+    if(!result[1] || !result[2]){
+        print_illegal_command();
+        return;
+    }
     char* text = NULL;
     char arr[MAX_TEXT_RATE_LENGTH] = {0};
     char* arr_copy = arr;
     text = strtok(NULL, delim);
-    if(text[0] != '\"'){
+    if(!text || text[0] != '\"'){
         print_illegal_command();
         return;
     }
@@ -203,10 +210,6 @@ void send_rate_course_command(int socket, char* user_input){
         arr_copy[0] = ' ';
         arr_copy++;
         text = strtok(NULL, delim);
-    }
-    if(!result[1] || !result[2]){
-        print_illegal_command();
-        return;
     }
     if(!is_int(result[1]) || !is_int(result[2])){
         print_illegal_command();
@@ -353,4 +356,6 @@ int main(int argc, char* argv[]){
         fgets(user_input, MAX_MESSAGE_LENGTH, stdin);
         handle_command(sock, user_input, &session_is_alive);
     }
+
+    close(sock);
 }
