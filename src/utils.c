@@ -1,15 +1,18 @@
 #include "utils.h"
 
+//throw error, error message is set according to 'errno'.
 void throwError(){
     printf("Error: %s\n", strerror(errno));
     exit(0);
 }
 
+//throw error when there are invalid arguments.
 void throwInvalidArguments(){
     printf("Error: Invalid arguments\n");
     exit(0);
 }
 
+//check if a string is consist only from digits.
 int is_int(char* str){
     for(int i=0; i<strlen(str); i++){
         if(!('0'<=str[i] && str[i] <='9')){return 0;}
@@ -17,6 +20,7 @@ int is_int(char* str){
     return 1;
 }
 
+//send message with length of 'len' written in 'buffer' through 'socket'.
 void send_all(int socket, char* buffer, int len){
     int message_length = htonl(len);
     char message_length_str[WORD_SIZE_IN_BYTES];
@@ -45,6 +49,7 @@ void send_all(int socket, char* buffer, int len){
     }
 }
 
+//receive message read from 'socket' and write it to 'buffer'.
 void recv_all(int socket, char* buffer){
     char message_length_str[WORD_SIZE_IN_BYTES];
     int message_length = 0;

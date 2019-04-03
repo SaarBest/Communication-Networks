@@ -133,6 +133,7 @@ void handle_user_command(int socket, char* rates_file_path, char* client_input, 
 }
 
 int main(int argc, char* argv[]){
+    //validate arguments.
     char* users_file_path = NULL;
     char* data_dir_path = NULL;
     int server_listening_port = 1337;
@@ -159,6 +160,7 @@ int main(int argc, char* argv[]){
     if(!fp){throwError();}
     fclose(fp);
 
+    //initialize the usernames and passwords data structures from a given file.
     char usernames[MAX_NUM_OF_USERS][MAX_CRED_LENGTH];
     char passwords[MAX_NUM_OF_USERS][MAX_CRED_LENGTH];
     for(int user=0; user < MAX_NUM_OF_USERS; user++){
@@ -167,30 +169,36 @@ int main(int argc, char* argv[]){
             passwords[user][i] = 0;
         }
     }
-
     set_users_credentials(users_file_path, usernames, passwords);
 
+    //create socket.
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock < 0){throwError();}
+
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
     struct sockaddr_in client_addr;
     memset(&client_addr, 0, sizeof(struct sockaddr_in));
-
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_listening_port);
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
+    //bind the server to the socket.
     if(bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0){throwError();}
 
+    //listen to the socket.
     if(listen(sock, 10) < 0){throwError();}
 
-    char* hello_message = "Welcome! Please log in.";
     socklen_t sin_size = sizeof(struct sockaddr_in);
     while(1){
+        //accept new client connection.
         int new_sock = accept(sock, (struct sockaddr *) &client_addr, &sin_size);
         if(new_sock < 0){throwError();}
-        send_all(new_sock, hello_message, strlen(hello_message));
+
+        //send welcome message.
+        send_all(new_sock, WELCOME_MESSAGE, strlen(WELCOME_MESSAGE));
+
+        //authorize client.
         int user_index;
         while(1){
             char credentials_input[32] = {0};
@@ -204,6 +212,8 @@ int main(int argc, char* argv[]){
                 send_all(new_sock, FAIL_MESSAGE, strlen(FAIL_MESSAGE));
             }
         }
+
+        //manage a session with the client.
         int session_is_alive = 1;
         while(session_is_alive){
             char client_input[MAX_MESSAGE_LENGTH] = {0};

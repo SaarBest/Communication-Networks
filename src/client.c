@@ -304,6 +304,7 @@ void handle_command(int socket, char* user_input, int* session_is_alive){
 }
 
 int main(int argc, char* argv[]){
+    //validate the arguments.
     char* server_hostname = LOCALHOST;
     int server_port = 1337;
     if(argc <= 3){
@@ -323,25 +324,29 @@ int main(int argc, char* argv[]){
         throwInvalidArguments();
     }
 
+    //create new socket.
     int sock = socket(PF_INET, SOCK_STREAM, 0);
     if(sock < 0){throwError();}
 
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
-
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(server_port);
+
+    //convert hostname string to ip address.
     struct hostent *lh = gethostbyname(server_hostname);
     if(inet_pton(AF_INET, lh->h_name, &server_addr.sin_addr) < 0){throwError(); }
 
+    //connect to the socket.
     if(connect(sock, (struct sockaddr*) &server_addr, sizeof(struct sockaddr)) < 0){throwError(); }
 
+    //authorize.
     char message[MAX_MESSAGE_LENGTH] = {0};
     recv_all(sock, message);
     printf("%s\n", message);
-
     while(!authorize(sock));
 
+    //manage a session with the server.
     int session_is_alive = 1;
     while(session_is_alive){
         char user_input[MAX_MESSAGE_LENGTH] = {0};
