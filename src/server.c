@@ -116,11 +116,13 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
     send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
 }
 
-void send_broadcast_message(int socket, char* client_input){
+void send_broadcast_message(int socket, char* client_input, char* username){
     node_t * current = active_clients;
+    char message[MAX_SERVER_MESSAGE_LENGTH] = {0};
+    sprintf(message,"%s sent a new message: %s",username,client_input);
     while(current != NULL){
         if(current->sock != socket){
-            send_all(current->sock, client_input, strlen(client_input));
+            send_all(current->sock, message, strlen(message));
         }
         current = current->next;
     }
@@ -148,7 +150,7 @@ void handle_user_command(int socket, char* rates_file_path, char* client_input, 
             break;
         case(6):
             //adding 2 to the client input address in order to skip the command index.
-            send_broadcast_message(socket, client_input + 2);
+            send_broadcast_message(socket, client_input + 2, username);
             break;
         default:
             end_user_session(session_is_alive);
