@@ -22,6 +22,8 @@
 #define FAIL_MESSAGE "fail"
 #define EMPTY_STRING ""
 
+//comment
+
 void throwError();
 
 void throwInvalidArguments();
