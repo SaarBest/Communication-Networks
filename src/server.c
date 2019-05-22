@@ -268,6 +268,9 @@ int main(int argc, char* argv[]){
                     current = current->next;
                 }
             }
+            else{
+                current = current->next;
+            }
         }
 
         current = active_clients;
@@ -285,6 +288,7 @@ int main(int argc, char* argv[]){
                 }
                 else {current = current->next;}
             }
+            else {current = current->next;}
         }
 
         if(FD_ISSET(listening_sock, &client_fds)){

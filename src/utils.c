@@ -28,6 +28,9 @@ void remove_from_list(node_t ** head, int sock) {
     while(current != NULL){
         if(current->sock == sock){
             prev->next = current->next;
+            if(current == prev){
+                *head = current->next;
+            }
             free(current);
             return;
         }

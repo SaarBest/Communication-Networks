@@ -417,7 +417,7 @@ int main(int argc, char* argv[]){
     fd_set fds;
     int fd_max = sock > STDIN_FILENO ? sock : STDIN_FILENO;
     while(session_is_alive){
-        FS_ZERO(&fds);
+        FD_ZERO(&fds);
         FD_SET(sock,&fds);
         FD_SET(STDIN_FILENO,&fds);
         if(select(fd_max+1,&fds, NULL, NULL, NULL) < 0) { throwError();}
