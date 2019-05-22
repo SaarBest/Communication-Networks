@@ -65,6 +65,13 @@ void add_course_to_list(int socket, char* client_input){
     strcpy(courses[actual_num_of_courses].course_name, course_name);
     actual_num_of_courses++;
     send_all(socket, OK_MESSAGE, strlen(OK_MESSAGE));
+    node_t * current = active_clients;
+    while(current != NULL){
+        if(current->sock != socket){
+            send_all(current->sock,NEW_COURSE_ADDED_MESSAGE,strlen(NEW_COURSE_ADDED_MESSAGE));
+        }
+        current = current->next;
+    }
 }
 
 void end_user_session(int* session_is_alive){
@@ -109,6 +116,16 @@ void send_course_rates(int socket, char* rates_file_path, char* client_input){
     send_all(socket, END_MESSAGE, strlen(END_MESSAGE));
 }
 
+void send_broadcast_message(int socket, char* client_input){
+    node_t * current = active_clients;
+    while(current != NULL){
+        if(current->sock != socket){
+            send_all(current->sock, client_input, strlen(client_input));
+        }
+        current = current->next;
+    }
+}
+
 void handle_user_command(int socket, char* rates_file_path, char* client_input, int* session_is_alive, char* username){
     char command_index_char;
     sscanf(client_input, "%c", &command_index_char);
@@ -128,6 +145,10 @@ void handle_user_command(int socket, char* rates_file_path, char* client_input, 
         case(4):
             //adding 2 to the client input address in order to skip the command index.
             send_course_rates(socket, rates_file_path, client_input + 2);
+            break;
+        case(6):
+            //adding 2 to the client input address in order to skip the command index.
+            send_broadcast_message(socket, client_input + 2);
             break;
         default:
             end_user_session(session_is_alive);

@@ -270,6 +270,66 @@ void send_get_rate_command(int socket, char* user_input){
     }
 }
 
+void send_broadcast_command(int socket, char* user_input){
+    char *result;
+    char delim[3] = " \n";
+    result = strtok(user_input, delim);
+    if(!result){
+        print_illegal_command();
+        return;
+    }
+    char* text = NULL;
+    char arr[MAX_MESSAGE_LENGTH] = {0};
+    char* arr_copy = arr;
+    text = strtok(NULL, delim);
+    if(!text || text[0] != '\"'){
+        print_illegal_command();
+        return;
+    }
+    int total_broadcast_length = 0;
+    while(1){
+        if(!text){
+            print_illegal_command();
+            return;
+        }
+        total_broadcast_length += strlen(text);
+        if(total_broadcast_length >= MAX_MESSAGE_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        strncpy(arr_copy, text, strlen(text));
+        arr_copy += strlen(text);
+        if(text[strlen(text)-1] == '\"'){
+            text = strtok(NULL, delim);
+            if(!text){
+                break;
+            }
+            else{
+                print_illegal_command();
+                return;
+            }
+        }
+        total_broadcast_length++;
+        if(total_broadcast_length >= MAX_MESSAGE_LENGTH){
+            print_illegal_command();
+            return;
+        }
+        arr_copy[0] = ' ';
+        arr_copy++;
+        text = strtok(NULL, delim);
+    }
+
+    char broadcast_message[MAX_MESSAGE_LENGTH] = {0};
+    sscanf(arr, "\"%[^\"]\"", broadcast_message);
+
+    char command_message[MAX_SERVER_MESSAGE_LENGTH] = {0};
+    if(sprintf(command_message, "%s %s", BROADCAST_MESSAGE, broadcast_message) < 0){
+        throwError();
+    }
+    send_all(socket, command_message, strlen(command_message));
+}
+
+
 void send_quit_command(int socket, char* user_input, int* session_is_alive){
     char *result[2];
     char delim[3] = " \n";
@@ -297,6 +357,9 @@ void handle_command(int socket, char* user_input, int* session_is_alive){
     }
     else if(!strcmp(command_prefix, COMMAND_GET_RATE)){
         send_get_rate_command(socket, user_input);
+    }
+    else if(!strcmp(command_prefix, COMMAND_BROADCAST)){
+        send_broadcast_command(socket, user_input);
     }
     else if(!strcmp(command_prefix, COMMAND_QUIT)){
         send_quit_command(socket, user_input, session_is_alive);
@@ -351,10 +414,23 @@ int main(int argc, char* argv[]){
 
     //manage a session with the server.
     int session_is_alive = 1;
+    fd_set fds;
+    int fd_max = sock > STDIN_FILENO ? sock : STDIN_FILENO;
     while(session_is_alive){
-        char user_input[MAX_MESSAGE_LENGTH] = {0};
-        fgets(user_input, MAX_MESSAGE_LENGTH, stdin);
-        handle_command(sock, user_input, &session_is_alive);
+        FS_ZERO(&fds);
+        FD_SET(sock,&fds);
+        FD_SET(STDIN_FILENO,&fds);
+        if(select(fd_max+1,&fds, NULL, NULL, NULL) < 0) { throwError();}
+        if(FD_ISSET(STDIN_FILENO,&fds)){
+            char user_input[MAX_MESSAGE_LENGTH] = {0};
+            fgets(user_input, MAX_MESSAGE_LENGTH, stdin);
+            handle_command(sock, user_input, &session_is_alive);
+        }
+        if(FD_ISSET(sock,&fds)){
+            char server_input[MAX_SERVER_MESSAGE_LENGTH] = {0};
+            recv_all(sock,server_input);
+            printf("%s\n",server_input);
+        }
     }
 
     close(sock);

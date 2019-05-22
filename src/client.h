@@ -22,11 +22,13 @@
 #define COMMAND_RATE_COURSE "rate_course"
 #define COMMAND_GET_RATE "get_rate"
 #define COMMAND_QUIT "quit"
+#define COMMAND_BROADCAST "broadcast"
 #define LIST_OF_COURSES_MESSAGE "1"
 #define ADD_COURSE_MESSAGE "2"
 #define RATE_COURSE_MESSAGE "3"
 #define GET_RATE_MESSAGE "4"
 #define QUIT_MESSAGE "5"
+#define BROADCAST_MESSAGE "6"
 
 #define COMMAND_MESSAGE_LENGTH 2
 
