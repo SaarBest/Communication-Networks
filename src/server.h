@@ -23,6 +23,7 @@
 #define MAX_NUM_OF_COURSES 10000
 #define RATES_FILE_NAME "rates.txt"
 #define WELCOME_MESSAGE "Welcome! Please log in."
+#define NEW_COURSE_ADDED_MESSAGE "A new course was just added!"
 
 //data structure for maintaining the courses list.
 struct Course{
