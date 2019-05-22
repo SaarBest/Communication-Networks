@@ -23,6 +23,17 @@
 #define EMPTY_STRING ""
 
 //comment
+typedef struct node {
+    int sock;
+    char* username;
+    struct node * next;
+} node_t;
+
+void add_to_list(node_t **head, int val, char* username);
+
+void remove_from_list(node_t ** head, int val);
+
+int get_fd_max(node_t * head);
 
 void throwError();
 

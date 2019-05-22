@@ -1,5 +1,53 @@
 #include "utils.h"
 
+void add_to_list(node_t **head, int sock, char* username) {
+    if(*head == NULL){
+        *head = (node_t *)malloc(sizeof(node_t));
+        (*head)->sock = sock;
+        (*head)->username = username;
+        (*head)->next = NULL;
+    }
+    else{
+        node_t * current = *head;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+
+        current->next = malloc(sizeof(node_t));
+        current->next->sock = sock;
+        current->next->username = username;
+        current->next->next = NULL;
+    }
+}
+
+void remove_from_list(node_t ** head, int sock) {
+
+    node_t * current = *head;
+    node_t * prev = *head;
+
+    while(current != NULL){
+        if(current->sock == sock){
+            prev->next = current->next;
+            free(current);
+            return;
+        }
+        prev = current;
+        current = current->next;
+    }
+}
+
+int get_fd_max(node_t * head){
+    node_t * current = head;
+    int max = 0;
+    while(current != NULL){
+        if(current->sock > max){
+            max = current->sock;
+        }
+        current = current -> next;
+    }
+    return max;
+}
+
 //throw error, error message is set according to 'errno'.
 void throwError(){
     printf("Error: %s\n", strerror(errno));

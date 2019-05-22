@@ -1,6 +1,7 @@
 #include "server.h"
 
 struct Course courses[MAX_NUM_OF_COURSES];
+node_t * active_clients = NULL;
 int actual_num_of_courses = 0;
 
 void set_users_credentials(char *users_file_path,
@@ -174,8 +175,8 @@ int main(int argc, char* argv[]){
     set_users_credentials(users_file_path, usernames, passwords);
 
     //create socket.
-    int sock = socket(PF_INET, SOCK_STREAM, 0);
-    if(sock < 0){throwError();}
+    int listening_sock = socket(PF_INET, SOCK_STREAM, 0);
+    if(listening_sock < 0){throwError();}
 
     struct sockaddr_in server_addr;
     memset(&server_addr, 0, sizeof(struct sockaddr_in));
@@ -186,43 +187,93 @@ int main(int argc, char* argv[]){
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     //bind the server to the socket.
-    if(bind(sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0){throwError();}
+    if(bind(listening_sock, (struct sockaddr*)&server_addr, sizeof(struct sockaddr_in)) < 0){throwError();}
 
     //listen to the socket.
-    if(listen(sock, 10) < 0){throwError();}
+    if(listen(listening_sock, 10) < 0){throwError();}
+
+    fd_set client_fds;
+    node_t * unauthorized_clients = NULL;
 
     socklen_t sin_size = sizeof(struct sockaddr_in);
     while(1){
-        //accept new client connection.
-        int new_sock = accept(sock, (struct sockaddr *) &client_addr, &sin_size);
-        if(new_sock < 0){throwError();}
 
-        //send welcome message.
-        send_all(new_sock, WELCOME_MESSAGE, strlen(WELCOME_MESSAGE));
+        FD_ZERO(&client_fds);
+        FD_SET(listening_sock, &client_fds);
+        node_t * current = active_clients;
+        while(current != NULL){
+            FD_SET(current->sock, &client_fds);
+            current = current->next;
+        }
+        current = unauthorized_clients;
+        while(current != NULL){
+            FD_SET(current->sock, &client_fds);
+            current = current->next;
+        }
 
-        //authorize client.
-        int user_index;
-        while(1){
-            char credentials_input[32] = {0};
-            recv_all(new_sock, credentials_input);
-            user_index = authorize_user(credentials_input, usernames, passwords);
-            if(user_index != -1){
-                send_all(new_sock, OK_MESSAGE, strlen(OK_MESSAGE));
-                break;
-            }
-            else{
-                send_all(new_sock, FAIL_MESSAGE, strlen(FAIL_MESSAGE));
+        int fd_max = listening_sock;
+        if(active_clients != NULL){
+            int x = get_fd_max(active_clients);
+            fd_max = x > fd_max ? x : fd_max;
+        }
+
+        if(unauthorized_clients != NULL){
+            int x = get_fd_max(unauthorized_clients);
+            fd_max = x > fd_max ? x : fd_max;
+        }
+
+        if(select(fd_max+1, &client_fds, NULL, NULL, NULL) < 0) {throwError();};
+
+        current = unauthorized_clients;
+        while(current != NULL){
+            if(FD_ISSET(current->sock,&client_fds)){
+                //authorize client.
+                int user_index;
+                char credentials_input[32] = {0};
+                recv_all(current->sock, credentials_input);
+                user_index = authorize_user(credentials_input, usernames, passwords);
+                if(user_index != -1){
+                    send_all(current->sock, OK_MESSAGE, strlen(OK_MESSAGE));
+                    int current_sock = current->sock;
+                    current = current->next;
+                    add_to_list(&active_clients, current_sock, usernames[user_index]);
+                    remove_from_list(&unauthorized_clients, current_sock);
+                    FD_CLR(current_sock, &client_fds);
+                }
+                else{
+                    send_all(current->sock, FAIL_MESSAGE, strlen(FAIL_MESSAGE));
+                    current = current->next;
+                }
             }
         }
 
-        //manage a session with the client.
-        int session_is_alive = 1;
-        while(session_is_alive){
-            char client_input[MAX_MESSAGE_LENGTH] = {0};
-            recv_all(new_sock, client_input);
-            handle_user_command(new_sock, path, client_input, &session_is_alive, usernames[user_index]);
+        current = active_clients;
+        while(current != NULL){
+            if(FD_ISSET(current->sock,&client_fds)){
+                int session_is_alive = 1;
+                char client_input[MAX_MESSAGE_LENGTH] = {0};
+                recv_all(current->sock, client_input);
+                handle_user_command(current->sock, path, client_input, &session_is_alive, current->username);
+                if(!session_is_alive){
+                    int current_sock = current->sock;
+                    current = current->next;
+                    remove_from_list(&active_clients, current_sock);
+                    close(current_sock);
+                }
+                else {current = current->next;}
+            }
         }
-        close(new_sock);
+
+        if(FD_ISSET(listening_sock, &client_fds)){
+            //accept new client connection.
+            int new_sock = accept(listening_sock, (struct sockaddr *) &client_addr, &sin_size);
+            if(new_sock < 0){throwError();}
+            //send welcome message.
+            send_all(new_sock, WELCOME_MESSAGE, strlen(WELCOME_MESSAGE));
+            add_to_list(&unauthorized_clients,new_sock, NULL);
+        }
     }
-    close(sock);
+
+    /* unreachable anyway */
+    //close(listening_sock);
 }
