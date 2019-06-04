@@ -116,7 +116,7 @@ void send_add_course_command(int socket,char* user_input){
         }
         strncpy(arr_copy, text, strlen(text));
         arr_copy += strlen(text);
-        if(text[strlen(text)-1] == '\"'){
+        if(text[strlen(text)-1] == '\"' && total_name_length > 1){
             text = strtok(NULL, delim);
             if(!text){
                 break;
@@ -192,7 +192,7 @@ void send_rate_course_command(int socket, char* user_input){
         }
         strncpy(arr_copy, text, strlen(text));
         arr_copy += strlen(text);
-        if(text[strlen(text)-1] == '\"'){
+        if(text[strlen(text)-1] == '\"' && total_rate_length > 1){
             text = strtok(NULL, delim);
             if(!text){
                 break;
@@ -299,7 +299,7 @@ void send_broadcast_command(int socket, char* user_input){
         }
         strncpy(arr_copy, text, strlen(text));
         arr_copy += strlen(text);
-        if(text[strlen(text)-1] == '\"'){
+        if(text[strlen(text)-1] == '\"' && total_broadcast_length > 1){
             text = strtok(NULL, delim);
             if(!text){
                 break;
